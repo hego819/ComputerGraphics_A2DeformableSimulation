@@ -58,6 +58,7 @@
         return vec2.dot(this.normal, vec2.sub([], position, this.position));
       };
     };
+    
 
     function DistanceConstraint(id, particle1, particle2, stiffness) {
       this.id = id;
@@ -69,10 +70,13 @@
       this.project = function () {
         const p1 = particle1.position_temp;
         const p2 = particle2.position_temp;
+        const m1i = 1.0 / particle1.mass;
+        const m2i = 1.0 / particle2.mass;
 
         // TODO: ここに距離制約の投影の処理を実装する
-        // particle1.position_temp = ...
-        // particle2.position_temp = ...
+        const k = this.stiffness / (m1i + m2i) * (vec2.len(vec2.sub([], p1, p2)) - this.restlength) / vec2.len(vec2.sub([], p1, p2));
+        particle1.position_temp = vec2.sub([], p1, vec2.scale([], vec2.sub([], p1, p2), k * m1i));
+        particle2.position_temp = vec2.add([], p2, vec2.scale([], vec2.sub([], p1, p2), k * m2i));
       };
     };
 
